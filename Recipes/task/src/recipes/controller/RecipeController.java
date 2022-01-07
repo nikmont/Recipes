@@ -1,12 +1,14 @@
 package recipes.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import recipes.Exception.RecipeNotFoundException;
 import recipes.model.Recipe;
 import recipes.service.RecipeService;
+
+import java.util.Map;
 
 @RestController
 public class RecipeController {
@@ -18,14 +20,24 @@ public class RecipeController {
         this.service = service;
     }
 
-    @PostMapping("/api/recipe")
-    public void addRecipe(@RequestBody Recipe recipe) {
-        service.add(recipe);
+    @PostMapping("/api/recipe/new")
+    public ResponseEntity addRecipe(@RequestBody Recipe recipe) {
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("id", service.add(recipe)));
     }
 
-    @GetMapping("/api/recipe")
-    public Recipe getRecipe() {
-        return service.get();
+    @GetMapping("/api/recipe/{id}")
+    public ResponseEntity getRecipe(@PathVariable int id) {
+
+        Recipe recipe = service.get(id);
+
+        System.out.println("получили - " + recipe);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(recipe);
     }
 
 }
