@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import recipes.Exception.RecipeNotFoundException;
 import recipes.model.Recipe;
 import recipes.service.RecipeService;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
@@ -21,23 +21,28 @@ public class RecipeController {
     }
 
     @PostMapping("/api/recipe/new")
-    public ResponseEntity addRecipe(@RequestBody Recipe recipe) {
+    public ResponseEntity addRecipe(@Valid @RequestBody Recipe recipe) {
+
+        long newID = service.add(recipe).getId();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(Map.of("id", service.add(recipe)));
+                .body(Map.of("id", newID));
     }
 
+    @ResponseStatus(code = HttpStatus.OK)
     @GetMapping("/api/recipe/{id}")
-    public ResponseEntity getRecipe(@PathVariable int id) {
+    public Recipe getRecipe(@PathVariable long id) {
 
         Recipe recipe = service.get(id);
 
-        System.out.println("получили - " + recipe);
+        return recipe;
+    }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(recipe);
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @DeleteMapping("/api/recipe/{id}")
+    public void deleteRecipe(@PathVariable long id) {
+        service.delete(id);
     }
 
 }

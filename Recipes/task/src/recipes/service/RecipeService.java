@@ -2,36 +2,34 @@ package recipes.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import recipes.Exception.RecipeNotFoundException;
+import recipes.exception.RecipeNotFoundException;
 import recipes.model.Recipe;
-
-import java.util.ArrayList;
-import java.util.List;
+import recipes.repository.RecipeRepository;
 
 @Service
 public class RecipeService {
 
-    private List<Recipe> recipes;
+    private final RecipeRepository repository;
 
-    {
-        recipes = new ArrayList<>();
+    @Autowired
+    public RecipeService(RecipeRepository repository) {
+        this.repository = repository;
     }
 
-    public int add(Recipe recipe) {
-        recipes.add(recipe);
-
-        System.out.println(recipe.toString());
-
-        return recipes.size();
+    public Recipe add(Recipe recipe) {
+        return repository.save(recipe);
     }
 
-    public Recipe get(int id) {
-
-        if (id > recipes.size() | id <= 0 ) {
+    public Recipe get(Long id) {
+        return repository.findById(id).orElseThrow(() -> new RecipeNotFoundException(""));
+    }
+    
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
             throw new RecipeNotFoundException("");
         }
 
-        return recipes.get(id - 1);
+        repository.deleteById(id);
     }
 
 }
