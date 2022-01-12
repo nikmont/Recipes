@@ -8,6 +8,7 @@ import recipes.model.Recipe;
 import recipes.service.RecipeService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,4 +46,21 @@ public class RecipeController {
         service.delete(id);
     }
 
+    @ResponseStatus(code = HttpStatus.OK)
+    @GetMapping("/api/recipe/search")
+    public List<Recipe> searchRecipes(@RequestParam Map<String,String> allParams) {
+
+        List<Recipe> founded = service.search(allParams);
+
+        return founded;
+    }
+
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @PutMapping("/api/recipe/{id}")
+    public Recipe updateRecipe(@PathVariable long id, @Valid @RequestBody Recipe recipe) {
+
+        Recipe updated = service.update(id, recipe);
+
+        return updated;
+    }
 }
